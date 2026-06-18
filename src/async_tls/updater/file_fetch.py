@@ -1,7 +1,6 @@
 import asyncio
 import os
 from functools import wraps
-from typing import Tuple
 
 from async_tls.utils.asset import generate_asset_name
 from async_tls.utils.asset import root_dir
@@ -49,7 +48,7 @@ def auto_retry(retries: int):
 
 
 @auto_retry(retries=3)
-async def get_latest_release() -> Tuple[str, list]:
+async def get_latest_release() -> tuple[str, list]:
     """
     Fetches the latest release from the GitHub API.
 

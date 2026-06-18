@@ -1,10 +1,10 @@
 import asyncio
-from logging import getLogger
-from typing import Any, Optional, Union
-from json import dumps, loads
-import urllib.parse
 import base64
 import ctypes
+import urllib.parse
+from json import dumps, loads
+from logging import getLogger
+from typing import Any
 
 from .c.cffi import (
     request, free_memory, get_cookies_from_session,
@@ -12,57 +12,57 @@ from .c.cffi import (
 )
 from .cookies import cookiejar_from_dict, merge_cookies, extract_cookies_to_jar
 from .exceptions.exceptions import TLSClientException
-from .utils.structures import CaseInsensitiveDict
 from .response import build_response
-from .utils.session_utils import random_session_id
 from .utils.identifiers import Client
+from .utils.session_utils import random_session_id
+from .utils.structures import CaseInsensitiveDict
 
 
 class Session:
     def __init__(
             self,
-            client: Optional[Client] = None,
-            ja3_string: Optional[str] = None,
-            h2_settings: Optional[dict] = None,
-            h2_settings_order: Optional[list] = None,
-            supported_signature_algorithms: Optional[list] = None,
-            supported_delegated_credentials_algorithms: Optional[list] = None,
-            supported_versions: Optional[list] = None,
-            key_share_curves: Optional[list] = None,
+            client: Client | None = None,
+            ja3_string: str | None = None,
+            h2_settings: dict | None = None,
+            h2_settings_order: list | None = None,
+            supported_signature_algorithms: list | None = None,
+            supported_delegated_credentials_algorithms: list | None = None,
+            supported_versions: list | None = None,
+            key_share_curves: list | None = None,
             cert_compression_algo: str | None = None,
             additional_decode: str | None = None,
-            pseudo_header_order: Optional[list] = None,
-            connection_flow: Optional[int] = None,
-            priority_frames: Optional[list] = None,
-            header_order: Optional[list] = None,
-            header_priority: Optional[dict] = None,
-            random_tls_extension_order: Optional = False,
-            force_http1: Optional = False,
-            catch_panics: Optional = False,
-            debug: Optional = False,
-            transportOptions: Optional[dict] = None,
-            connectHeaders: Optional[dict] = None,
+            pseudo_header_order: list | None = None,
+            connection_flow: int | None = None,
+            priority_frames: list | None = None,
+            header_order: list | None = None,
+            header_priority: dict | None = None,
+            random_tls_extension_order: bool | None = False,
+            force_http1: bool | None = False,
+            catch_panics: bool | None = False,
+            debug: bool | None = False,
+            transportOptions: dict | None = None,
+            connectHeaders: dict | None = None,
             disable_http3: bool = False,
             protocol_racing: bool = False,
-            h3_settings: Optional[dict] = None,
-            h3_settings_order: Optional[list] = None,
-            h3_pseudo_header_order: Optional[list] = None,
-            h3_priority_param: Optional[int] = None,
-            h3_send_grease_frames: Optional[bool] = None,
-            local_address: Optional[str] = None,
+            h3_settings: dict | None = None,
+            h3_settings_order: list | None = None,
+            h3_pseudo_header_order: list | None = None,
+            h3_priority_param: int | None = None,
+            h3_send_grease_frames: bool | None = None,
+            local_address: str | None = None,
             disable_ipv6: bool = False,
             disable_ipv4: bool = False,
             is_rotating_proxy: bool = False,
-            server_name_overwrite: Optional[str] = None,
-            certificate_pinning: Optional[dict] = None,
+            server_name_overwrite: str | None = None,
+            certificate_pinning: dict | None = None,
             without_cookie_jar: bool = False,
-            alps_protocols: Optional[list] = None,
-            ech_candidate_payloads: Optional[list] = None,
-            ech_candidate_cipher_suites: Optional[list] = None,
-            allow_http: Optional[bool] = None,
-            record_size_limit: Optional[int] = None,
-            stream_id: Optional[int] = None,
-            default_headers: Optional[dict] = None,
+            alps_protocols: list | None = None,
+            ech_candidate_payloads: list | None = None,
+            ech_candidate_cipher_suites: list | None = None,
+            allow_http: bool | None = None,
+            record_size_limit: int | None = None,
+            stream_id: int | None = None,
+            default_headers: dict | None = None,
     ) -> None:
         self._in_context: bool = False
         self.client_identifier = client.value if client else None
@@ -187,22 +187,22 @@ class Session:
             self,
             method: str,
             url: str,
-            params: Optional[dict] = None,
-            data: Optional[Union[str, dict]] = None,
-            headers: Optional[dict] = None,
-            cookies: Optional[dict] = None,
-            json: Optional[dict] = None,
-            allow_redirects: Optional[bool] = True,
-            insecure_skip_verify: Optional[bool] = False,
-            timeout_seconds: Optional[int] = None,
-            timeout: Optional[int] = None,
-            timeout_milliseconds: Optional[int] = None,
-            proxy: Optional[dict] = None,
-            is_byte_response: Optional[bool] = False,
-            request_host_override: Optional[str] = None,
-            stream_output_path: Optional[str] = None,
-            stream_output_block_size: Optional[int] = None,
-            stream_output_eof_symbol: Optional[str] = None,
+            params: dict | None = None,
+            data: str | dict | None = None,
+            headers: dict | None = None,
+            cookies: dict | None = None,
+            json: dict | None = None,
+            allow_redirects: bool | None = True,
+            insecure_skip_verify: bool | None = False,
+            timeout_seconds: int | None = None,
+            timeout: int | None = None,
+            timeout_milliseconds: int | None = None,
+            proxy: dict | None = None,
+            is_byte_response: bool | None = False,
+            request_host_override: str | None = None,
+            stream_output_path: str | None = None,
+            stream_output_block_size: int | None = None,
+            stream_output_eof_symbol: str | None = None,
     ):
         if not self._in_context:
             getLogger().warning('Using Session directly (without context) can lead to serious memory leaks. '
@@ -402,13 +402,13 @@ class Session:
     async def head(self, url: str, **kwargs: Any):
         return await self.execute_request(method="HEAD", url=url, **kwargs)
 
-    async def post(self, url: str, data: Optional[Union[str, dict]] = None, json: Optional[dict] = None, **kwargs: Any):
+    async def post(self, url: str, data: str | dict | None = None, json: dict | None = None, **kwargs: Any):
         return await self.execute_request(method="POST", url=url, data=data, json=json, **kwargs)
 
-    async def put(self, url: str, data: Optional[Union[str, dict]] = None, json: Optional[dict] = None, **kwargs: Any):
+    async def put(self, url: str, data: str | dict | None = None, json: dict | None = None, **kwargs: Any):
         return await self.execute_request(method="PUT", url=url, data=data, json=json, **kwargs)
 
-    async def patch(self, url: str, data: Optional[Union[str, dict]] = None, json: Optional[dict] = None,
+    async def patch(self, url: str, data: str | dict | None = None, json: dict | None = None,
                     **kwargs: Any):
         return await self.execute_request(method="PATCH", url=url, data=data, json=json, **kwargs)
 

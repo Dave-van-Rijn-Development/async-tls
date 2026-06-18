@@ -1,7 +1,7 @@
 import copy
 from http.client import HTTPMessage
 from http.cookiejar import CookieJar, Cookie
-from typing import MutableMapping, Union, Any
+from typing import MutableMapping, Any
 from urllib.parse import urlparse, urlunparse
 
 from async_tls.utils.structures import CaseInsensitiveDict
@@ -422,7 +422,7 @@ def cookiejar_from_dict(cookie_dict: dict) -> RequestsCookieJar:
     return cookie_jar
 
 
-def merge_cookies(cookiejar: RequestsCookieJar, cookies: Union[dict, RequestsCookieJar]) -> RequestsCookieJar:
+def merge_cookies(cookiejar: RequestsCookieJar, cookies: dict | RequestsCookieJar) -> RequestsCookieJar:
     """Merge cookies in session and cookies provided in request"""
     if type(cookies) is dict:
         cookies = cookiejar_from_dict(cookies)
