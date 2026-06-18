@@ -29,8 +29,8 @@ class Session:
             supported_delegated_credentials_algorithms: Optional[list] = None,
             supported_versions: Optional[list] = None,
             key_share_curves: Optional[list] = None,
-            cert_compression_algo: str = None,
-            additional_decode: str = None,
+            cert_compression_algo: str | None = None,
+            additional_decode: str | None = None,
             pseudo_header_order: Optional[list] = None,
             connection_flow: Optional[int] = None,
             priority_frames: Optional[list] = None,
@@ -140,7 +140,7 @@ class Session:
     async def close(self):
         """Destroy this session in the Go library, freeing connections and memory."""
         payload = dumps({"sessionId": self._session_id}).encode('utf-8')
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         response = await loop.run_in_executor(None, destroy_session, payload)
         response_bytes = ctypes.string_at(response)
         response_object = loads(response_bytes.decode('utf-8'))
@@ -150,7 +150,7 @@ class Session:
     @staticmethod
     async def close_all():
         """Destroy all sessions in the Go library."""
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         response = await loop.run_in_executor(None, destroy_all)
         response_bytes = ctypes.string_at(response)
         response_object = loads(response_bytes.decode('utf-8'))
@@ -160,7 +160,7 @@ class Session:
     async def get_cookies(self, url: str) -> list:
         """Get cookies stored in the Go session for a given URL."""
         payload = dumps({"sessionId": self._session_id, "url": url}).encode('utf-8')
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         response = await loop.run_in_executor(None, get_cookies_from_session, payload)
         response_bytes = ctypes.string_at(response)
         response_object = loads(response_bytes.decode('utf-8'))
@@ -176,7 +176,7 @@ class Session:
             "url": url,
             "cookies": cookies,
         }).encode('utf-8')
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         response = await loop.run_in_executor(None, add_cookies_to_session, payload)
         response_bytes = ctypes.string_at(response)
         response_object = loads(response_bytes.decode('utf-8'))
@@ -359,7 +359,7 @@ class Session:
                 request_payload["tlsClientIdentifier"] = self.client_identifier
                 request_payload["withRandomTLSExtensionOrder"] = self.random_tls_extension_order
 
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             response = await loop.run_in_executor(None, request, dumps(request_payload).encode('utf-8'))
 
             response_bytes = ctypes.string_at(response)
